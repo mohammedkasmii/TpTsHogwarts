@@ -180,7 +180,22 @@ for (const event of events) {
   }
 }
 
-type CastArguments = Parameters<AcademyService["castSpell"]>;
+console.log("\n--- Exercise 4: validate spell power ---");
+function tryAddSpell(spell: Spell): void {
+  try {
+    spells.add(spell);
+    console.log(`Accepted: ${spell.name} (power ${spell.power})`);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.log(`Rejected: ${spell.name} -> ${message}`);
+  }
+}
+
+tryAddSpell({ id: 103, name: "Episkey", category: "healing", power: 50 });
+tryAddSpell({ id: 104, name: "Invalid Spell", category: "attack", power: -10 });
+console.log(`Spells stored: ${spells.getAll().map(s => s.name).join(", ")}`);
+
+type CastArguments =Parameters<AcademyService["castSpell"]>;
 type CastResult = ReturnType<AcademyService["castSpell"]>;
 type AttackOutput = SpellOutput<"attack">; 
 type HealingOutput = SpellOutput<"healing">; 

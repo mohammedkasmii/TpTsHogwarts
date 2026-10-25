@@ -1,5 +1,5 @@
 import type { Entity, EntityUpdate, NewEntity, Spell, Wizard } from "./types";
-import { Log, MeasureTime } from "./decorators";
+import { Log, MeasureTime, ValidateSpellPower } from "./decorators";
 import { type IdGenerator, SequentialIdGenerator } from "./id-generator";
 
 export class Repository<T extends Entity> {
@@ -49,4 +49,9 @@ export class WizardRepository extends Repository<Wizard> {
     return this.findWhere(wizard => wizard.house === house);
   }
 }
-export class SpellRepository extends Repository<Spell> {}
+export class SpellRepository extends Repository<Spell> {
+  @ValidateSpellPower
+  override add(spell: Spell): void {
+    super.add(spell);
+  }
+}
