@@ -18,6 +18,7 @@ import {
 import { WizardRepository, SpellRepository } from "./repository";
 import { Log } from "./decorators";
 import { handleSpellCast, isSpellCastEvent } from "./events";
+import { SpellCalculator } from "./spell-calculator";
 
 function isHouse(value: unknown): value is House {
   return (
@@ -195,7 +196,17 @@ tryAddSpell({ id: 103, name: "Episkey", category: "healing", power: 50 });
 tryAddSpell({ id: 104, name: "Invalid Spell", category: "attack", power: -10 });
 console.log(`Spells stored: ${spells.getAll().map(s => s.name).join(", ")}`);
 
-type CastArguments =Parameters<AcademyService["castSpell"]>;
+console.log("\n--- Exercise 5: cache method results ---");
+const calculator = new SpellCalculator();
+console.log(calculator.calculatePower(10, 3));
+console.log(calculator.calculatePower(10, 3));
+console.log(calculator.calculatePower(5, 2));
+
+console.log("A second calculator has its own cache:");
+const otherCalculator = new SpellCalculator();
+console.log(otherCalculator.calculatePower(10, 3));
+
+type CastArguments = Parameters<AcademyService["castSpell"]>;
 type CastResult = ReturnType<AcademyService["castSpell"]>;
 type AttackOutput = SpellOutput<"attack">; 
 type HealingOutput = SpellOutput<"healing">; 
