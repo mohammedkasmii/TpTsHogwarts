@@ -30,6 +30,10 @@ export class Repository<T extends Entity> {
     return [...this.items];
   }
 
+  findWhere(predicate: (item: T) => boolean): T[] {
+    return this.items.filter(predicate);
+  }
+
   update(id: number, changes: EntityUpdate<T>): boolean {
     const item = this.findById(id);
 
@@ -40,5 +44,9 @@ export class Repository<T extends Entity> {
   }
 }
 
-export class WizardRepository extends Repository<Wizard> {}
+export class WizardRepository extends Repository<Wizard> {
+  findByHouse(house: Wizard["house"]): Wizard[] {
+    return this.findWhere(wizard => wizard.house === house);
+  }
+}
 export class SpellRepository extends Repository<Spell> {}

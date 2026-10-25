@@ -60,10 +60,9 @@ class AcademyService {
     return `${wizard.name} casts ${spell.name}!`;
   }
 
-  findByHouse(house: House): WizardSummary[] {
+  getHouseSummaries(house: Wizard["house"]): WizardSummary[] {
     return this.wizards
-      .getAll()
-      .filter(wizard => wizard.house === house)
+      .findByHouse(house)
       .map(({ id, name, house }) => ({ id, name, house }));
   }
 
@@ -136,8 +135,12 @@ console.log(wizards.findById(luna.id));
 console.log("\n--- Cast a spell ---");
 console.log(academy.castSpell(1, 101));
 
-console.log("\n--- Find wizards by house ---");
-console.log(academy.findByHouse("Gryffindor"));
+console.log("\n--- Exercise 2: filter wizards by house ---");
+const gryffindors = wizards.findByHouse("Gryffindor");
+console.log(`Gryffindor: ${gryffindors.map(w => w.name).join(", ")}`);
+console.log(`Ravenclaw: ${wizards.findByHouse("Ravenclaw").map(w => w.name).join(", ")}`);
+console.log(`Hufflepuff: ${wizards.findByHouse("Hufflepuff").length} wizard(s)`);
+console.log(academy.getHouseSummaries("Slytherin"));
 
 console.log("\n--- Update a wizard ---");
 academy.updateWizard(1, { level: 6 });
