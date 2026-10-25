@@ -1,11 +1,23 @@
-import type { Wizard, Spell } from "./types";
+import type { Entity, EntityUpdate, NewEntity, Spell, Wizard } from "./types";
 import { Log, MeasureTime } from "./decorators";
+import { type IdGenerator, SequentialIdGenerator } from "./id-generator";
 
-export class Repository<T extends { id: number }> {
+export class Repository<T extends Entity> {
   private items: T[] = [];
+
+  constructor(private readonly ids: IdGenerator = new SequentialIdGenerator()) {}
+
+  create(data: NewEntity<T>): T {
+    const entity = { ...data, id: this.ids.next() } as T;
+    this.add(entity);
+    return entity;
+  }
 
   @Log
   add(item: T): void {
+    if (this.items.some(existing => existing.id === item.id)) {
+      throw new Error(`An item with id ${item.id} already exists`);
+    }
     this.items.push(item);
   }
 
@@ -18,7 +30,7 @@ export class Repository<T extends { id: number }> {
     return [...this.items];
   }
 
-  update(id: number, changes: Partial<T>): boolean {
+  update(id: number, changes: EntityUpdate<T>): boolean {
     const item = this.findById(id);
 
     if (!item) return false;

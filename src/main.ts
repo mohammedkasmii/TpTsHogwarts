@@ -9,6 +9,7 @@ import {
   type ArrayElement,
   type WizardSummary,
   type WizardUpdate,
+  type NewWizard,
   type AttackSpell,
   type NonHealingCategory,
 } from "./types";
@@ -25,7 +26,6 @@ function isHouse(value: unknown): value is House {
   );
 }
 
-// Type guard: safely narrow unknown data to a Wizard.
 function isWizard(value: unknown): value is Wizard {
   if (typeof value !== "object" || value === null) {
     return false;
@@ -82,25 +82,22 @@ class AcademyService {
 const wizards = new WizardRepository();
 const spells = new SpellRepository();
 
-wizards.add({
-  id: 1,
+wizards.create({
   name: "Harry Potter",
   house: "Gryffindor",
   level: 5,
   active: true,
-  patronus: "Stag"
+  traits: { patronus: "Stag" }
 });
 
-wizards.add({
-  id: 2,
+wizards.create({
   name: "Hermione Granger",
   house: "Gryffindor",
   level: 8,
   active: true
 });
 
-wizards.add({
-  id: 3,
+wizards.create({
   name: "Draco Malfoy",
   house: "Slytherin",
   level: 6,
@@ -122,6 +119,19 @@ spells.add({
 });
 
 const academy = new AcademyService(wizards, spells);
+
+console.log("\n--- Exercise 1: register a new wizard (no id) ---");
+const newcomer: NewWizard = {
+  name: "Luna Lovegood",
+  house: "Ravenclaw",
+  level: 4,
+  active: true,
+  traits: { patronus: "Hare", wand: "Hawthorn" }
+};
+
+const luna = wizards.create(newcomer);
+console.log(`Registered ${luna.name} with generated id ${luna.id}`);
+console.log(wizards.findById(luna.id));
 
 console.log("\n--- Cast a spell ---");
 console.log(academy.castSpell(1, 101));
@@ -156,12 +166,11 @@ const events: AcademyEvent[] = [
 ];
 console.log(academy.getSpellEvents(events));
 
-// Compile-time demonstrations: these aliases are checked by TypeScript.
 type CastArguments = Parameters<AcademyService["castSpell"]>;
 type CastResult = ReturnType<AcademyService["castSpell"]>;
-type AttackOutput = SpellOutput<"attack">; // number
-type HealingOutput = SpellOutput<"healing">; // string
-type SpellItem = ArrayElement<Spell[]>; // Spell
+type AttackOutput = SpellOutput<"attack">; 
+type HealingOutput = SpellOutput<"healing">; 
+type SpellItem = ArrayElement<Spell[]>; 
 type AttackSpellExample = AttackSpell;
 type RemainingCategories = NonHealingCategory;
 type CategoryExample = SpellCategory;
