@@ -1,8 +1,11 @@
-export type House =
-  | "Gryffindor"
-  | "Slytherin"
-  | "Ravenclaw"
-  | "Hufflepuff";
+export const HOUSES = [
+  "Gryffindor",
+  "Slytherin",
+  "Ravenclaw",
+  "Hufflepuff",
+] as const;
+
+export type House = (typeof HOUSES)[number];
 
 export interface Entity {
   id: number;

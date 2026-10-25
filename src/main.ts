@@ -2,7 +2,6 @@ import {
   type Wizard,
   type Spell,
   type AcademyEvent,
-  type House,
   type HousePoints,
   type SpellCategory,
   type SpellOutput,
@@ -19,31 +18,7 @@ import { WizardRepository, SpellRepository } from "./repository";
 import { Log } from "./decorators";
 import { handleSpellCast, isSpellCastEvent } from "./events";
 import { SpellCalculator } from "./spell-calculator";
-
-function isHouse(value: unknown): value is House {
-  return (
-    value === "Gryffindor" ||
-    value === "Slytherin" ||
-    value === "Ravenclaw" ||
-    value === "Hufflepuff"
-  );
-}
-
-function isWizard(value: unknown): value is Wizard {
-  if (typeof value !== "object" || value === null) {
-    return false;
-  }
-
-  const candidate = value as Record<string, unknown>;
-
-  return (
-    typeof candidate.id === "number" &&
-    typeof candidate.name === "string" &&
-    isHouse(candidate.house) &&
-    typeof candidate.level === "number" &&
-    typeof candidate.active === "boolean"
-  );
-}
+import { isHouse, isWizard } from "./guards";
 
 class AcademyService {
   constructor(
@@ -206,7 +181,29 @@ console.log("A second calculator has its own cache:");
 const otherCalculator = new SpellCalculator();
 console.log(otherCalculator.calculatePower(10, 3));
 
-type CastArguments = Parameters<AcademyService["castSpell"]>;
+console.log("\n--- Exercise 6: stricter type guard ---");
+const validData: unknown = {
+  id: 1,
+  name: "Harry Potter",
+  house: "Gryffindor",
+  level: 5,
+  active: true
+};
+
+const invalidData: unknown = {
+  id: 2,
+  name: "Viktor",
+  house: "Durmstrang",
+  level: 5,
+  active: true
+};
+
+console.log(`isWizard(validData): ${isWizard(validData)}`);
+console.log(`isWizard(invalidData): ${isWizard(invalidData)}`);
+console.log(`isHouse("Hufflepuff"): ${isHouse("Hufflepuff")}`);
+console.log(`isHouse("Beauxbatons"): ${isHouse("Beauxbatons")}`);
+
+type CastArguments =Parameters<AcademyService["castSpell"]>;
 type CastResult = ReturnType<AcademyService["castSpell"]>;
 type AttackOutput = SpellOutput<"attack">; 
 type HealingOutput = SpellOutput<"healing">; 
