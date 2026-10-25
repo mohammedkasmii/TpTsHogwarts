@@ -10,12 +10,14 @@ import {
   type WizardSummary,
   type WizardUpdate,
   type NewWizard,
+  type SpellCastEvent,
   type AttackSpell,
   type NonHealingCategory,
 } from "./types";
 
 import { WizardRepository, SpellRepository } from "./repository";
 import { Log } from "./decorators";
+import { handleSpellCast, isSpellCastEvent } from "./events";
 
 function isHouse(value: unknown): value is House {
   return (
@@ -70,11 +72,8 @@ class AcademyService {
     return this.wizards.update(id, changes);
   }
 
-  getSpellEvents(events: AcademyEvent[]): Extract<AcademyEvent, { type: "spell-cast" }>[] {
-    return events.filter(
-      (event): event is Extract<AcademyEvent, { type: "spell-cast" }> =>
-        event.type === "spell-cast"
-    );
+  getSpellEvents(events: AcademyEvent[]): SpellCastEvent[] {
+    return events.filter(isSpellCastEvent);
   }
 }
 
@@ -168,6 +167,18 @@ const events: AcademyEvent[] = [
   { type: "wizard-expelled", wizardId: 3 }
 ];
 console.log(academy.getSpellEvents(events));
+
+console.log("\n--- Exercise 3: handle only spell-cast events ---");
+const lumos: SpellCastEvent = { type: "spell-cast", wizardId: 4, spellName: "Lumos" };
+console.log(handleSpellCast(lumos));
+
+for (const event of events) {
+  if (isSpellCastEvent(event)) {
+    console.log(handleSpellCast(event));
+  } else {
+    console.log(`Skipped "${event.type}" event`);
+  }
+}
 
 type CastArguments = Parameters<AcademyService["castSpell"]>;
 type CastResult = ReturnType<AcademyService["castSpell"]>;

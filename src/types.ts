@@ -33,6 +33,8 @@ export type AcademyEvent =
   | { type: "level-up"; wizardId: number; newLevel: number }
   | { type: "wizard-expelled"; wizardId: number };
 
+export type SpellCastEvent = Extract<AcademyEvent, { type: "spell-cast" }>;
+
 export type SpellOutput<T extends SpellCategory> =
   T extends "attack" ? number :
   T extends "defense" ? boolean :
